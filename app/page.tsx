@@ -18,32 +18,43 @@ export default async function Home({
 
   const resolvedSearchParams = await searchParams;
   const activeCategory = typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : 'All';
+  const activeSort = typeof resolvedSearchParams.sort === 'string' ? resolvedSearchParams.sort : 'latest';
   const pageStr = typeof resolvedSearchParams.page === 'string' ? resolvedSearchParams.page : '1';
   const currentPage = parseInt(pageStr, 10) || 1;
 
   // Fetch distinct categories for the filter
-  const { data: allPosts } = await supabase
-    .from('posts')
-    .select('category');
+  const { data: allCategories } = await supabase
+    .from('categories')
+    .select('name');
 
   let uniqueCategories: string[] = [];
-  if (allPosts) {
-    uniqueCategories = Array.from(new Set(allPosts.map((p) => p.category)));
+  if (allCategories) {
+    uniqueCategories = allCategories.map((c: any) => c.name);
   }
   const categories = ['All', ...uniqueCategories];
 
-  // Base query
-  let query = supabase.from('posts').select('*', { count: 'exact' });
+  // Base query: fetch from the view that has counts pre-aggregated
+  let query = supabase.from('posts_with_counts').select('*', { count: 'exact' });
 
   // Apply category filter
   if (activeCategory !== 'All') {
-    query = query.eq('category', activeCategory);
+    query = query.eq('category_name', activeCategory);
   }
 
   // Apply pagination
   const from = (currentPage - 1) * POSTS_PER_PAGE;
   const to = from + POSTS_PER_PAGE - 1;
-  query = query.range(from, to).order('created_at', { ascending: false });
+  query = query.range(from, to);
+
+  // Apply sorting
+  if (activeSort === 'likes') {
+    query = query.order('likes_count', { ascending: false }).order('created_at', { ascending: false });
+  } else if (activeSort === 'comments') {
+    query = query.order('comments_count', { ascending: false }).order('created_at', { ascending: false });
+  } else {
+    // Default: latest
+    query = query.order('created_at', { ascending: false });
+  }
 
   const { data: posts, count, error } = await query;
   const totalPosts = count || 0;
@@ -59,6 +70,7 @@ export default async function Home({
         <CategoryFilter
           categories={categories}
           activeCategory={activeCategory}
+          activeSort={activeSort}
         />
 
         {posts && posts.length > 0 ? (

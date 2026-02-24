@@ -1,13 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { Heart, MessageSquare } from 'lucide-react';
 
 interface Post {
     id: string;
     title: string;
     excerpt: string;
-    category: string;
+    category_name?: string;
     image_url: string | null;
     created_at: string;
+    likes_count?: number;
+    comments_count?: number;
 }
 
 export default function PostCard({ post }: { post: Post }) {
@@ -16,6 +19,9 @@ export default function PostCard({ post }: { post: Post }) {
         month: 'long',
         day: 'numeric',
     });
+
+    const likesCount = post.likes_count || 0;
+    const commentsCount = post.comments_count || 0;
 
     return (
         <article className="flex flex-col rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 w-full text-left group">
@@ -41,11 +47,21 @@ export default function PostCard({ post }: { post: Post }) {
                 <div className="p-6 flex flex-col flex-1">
                     <div className="flex items-center gap-2 mb-3">
                         <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20">
-                            {post.category}
+                            {post.category_name || 'All'}
                         </span>
                         <span className="text-xs text-zinc-500 dark:text-zinc-400">
                             {formattedDate}
                         </span>
+                        <div className="flex items-center gap-3 ml-auto text-zinc-400 dark:text-zinc-500">
+                            <div className="flex items-center gap-1">
+                                <Heart className="w-3.5 h-3.5" />
+                                <span className="text-xs">{likesCount}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <MessageSquare className="w-3.5 h-3.5" />
+                                <span className="text-xs">{commentsCount}</span>
+                            </div>
+                        </div>
                     </div>
                     <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {post.title}

@@ -8,6 +8,11 @@ export async function uploadImage(formData: FormData) {
         return { error: 'No file provided' };
     }
 
+    // 10MB limit (10 * 1024 * 1024 bytes)
+    if (file.size > 10 * 1024 * 1024) {
+        return { error: 'File size exceeds 10MB limit.' };
+    }
+
     const supabase = await createClient();
 
     const { data: { user }, error: userError } = await supabase.auth.getUser();

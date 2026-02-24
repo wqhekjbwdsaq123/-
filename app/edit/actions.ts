@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 
-export async function publishPost(formData: FormData) {
+export async function updatePost(postId: string, formData: FormData) {
     const supabase = await createClient();
 
     const title = formData.get("title") as string;
@@ -27,29 +27,41 @@ export async function publishPost(formData: FormData) {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
     if (userError || !user) {
-        return { error: "You must be logged in to publish a post." };
+        return { error: "You must be logged in to update a post." };
+    }
+
+    // Verify authorship
+    const { data: existingPost } = await supabase
+        .from('posts')
+        .select('author_id')
+        .eq('id', postId)
+        .single();
+
+    if (!existingPost || existingPost.author_id !== user.id) {
+        return { error: "You do not have permission to edit this post." };
     }
 
     const { data, error } = await supabase
         .from("posts")
-        .insert([
-            {
-                title,
-                content,
-                excerpt,
-                category_id,
-                image_url,
-                author_id: user.id
-            },
-        ])
+        .update({
+            title,
+            content,
+            excerpt,
+            category_id,
+            image_url,
+            updated_at: new Date().toISOString()
+        })
+        .eq('id', postId)
         .select()
         .single();
 
     if (error) {
-        console.error("Error publishing post:", error);
+        console.error("Error updating post:", error);
         return { error: error.message };
     }
 
     revalidatePath("/");
+    revalidatePath(`/posts/${postId}`);
+
     return { success: true, post: data };
 }

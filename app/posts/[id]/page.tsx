@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, MessageSquare } from 'lucide-react';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import { createClient } from '@/utils/supabase/server';
@@ -8,6 +8,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import PostActions from './PostActions';
 import LikeButton from './LikeButton';
+import CommentsSection from '@/app/components/CommentsSection';
+import { getComments } from '@/app/actions/comments';
 
 export default async function PostDetailPage({
     params,
@@ -22,7 +24,7 @@ export default async function PostDetailPage({
 
     const { data: post, error } = await supabase
         .from('posts')
-        .select('*')
+        .select('*, categories!inner(name)')
         .eq('id', id)
         .single();
 
@@ -43,6 +45,9 @@ export default async function PostDetailPage({
             .single();
         isLiked = !!userLike;
     }
+
+    // Fetch comments
+    const comments = await getComments(id);
 
     if (error || !post) {
         return (
@@ -84,7 +89,7 @@ export default async function PostDetailPage({
                 {/* Header section: Category & Title */}
                 <div className="mb-8">
                     <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20 mb-4">
-                        {post.category}
+                        {post.categories?.name}
                     </span>
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-6 leading-tight">
                         {post.title}
@@ -110,6 +115,13 @@ export default async function PostDetailPage({
                             initialLikesCount={likesCount || 0}
                             isLoggedIn={!!user}
                         />
+                        <a
+                            href="#comments"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                        >
+                            <MessageSquare className="w-4 h-4" />
+                            <span>댓글 {comments.length || 0}개</span>
+                        </a>
                         <PostActions postId={post.id} isAuthor={!!isAuthor} />
                     </div>
                 </div>
@@ -151,6 +163,16 @@ export default async function PostDetailPage({
                         <p className="text-zinc-500 dark:text-zinc-400 italic">내용이 없습니다.</p>
                     )}
                 </article>
+
+                {/* Comments Section */}
+                <div id="comments">
+                    <CommentsSection
+                        postId={post.id}
+                        comments={comments || []}
+                        currentUserId={user?.id}
+                        isPostAuthor={!!isAuthor}
+                    />
+                </div>
             </main>
 
             <Footer />

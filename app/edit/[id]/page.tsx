@@ -1,16 +1,19 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Plus, Settings, HelpCircle, Hexagon, ImagePlus } from "lucide-react";
-import Editor from "./components/Editor";
-import { publishPost } from "./actions";
+import Editor from "@/app/write/components/Editor";
+import { updatePost } from "../actions";
 import { createCategory } from "@/app/actions/categories";
-import { uploadImage } from "./upload-action";
+import { uploadImage } from "@/app/write/upload-action";
 import { createClient } from '@/utils/supabase/client';
 
-export default function WritePage() {
+export default function EditPage() {
     const router = useRouter();
+    const params = useParams();
+    const postId = params.id as string;
+
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [categoryId, setCategoryId] = useState("");
@@ -18,21 +21,41 @@ export default function WritePage() {
     const [isPublishing, setIsPublishing] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        const fetchCategories = async () => {
+        const fetchInitialData = async () => {
             const supabase = createClient();
-            const { data } = await supabase.from("categories").select("id, name").order("name");
-            if (data) {
-                setCategories(data);
-                if (data.length > 0) {
-                    setCategoryId(data[0].id);
+
+            // Fetch categories
+            const { data: cats } = await supabase.from("categories").select("id, name").order("name");
+            if (cats) {
+                setCategories(cats);
+            }
+
+            // Fetch post data
+            if (postId) {
+                const { data: post, error } = await supabase
+                    .from("posts")
+                    .select("*")
+                    .eq("id", postId)
+                    .single();
+
+                if (post) {
+                    setTitle(post.title || "");
+                    setContent(post.content || "");
+                    setCategoryId(post.category_id || (cats && cats.length > 0 ? cats[0].id : ""));
+                } else {
+                    alert("게시글을 불러올 수 없습니다.");
+                    router.push("/");
                 }
             }
+            setIsLoading(false);
         };
-        fetchCategories();
-    }, []);
+
+        fetchInitialData();
+    }, [postId, router]);
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -48,8 +71,7 @@ export default function WritePage() {
             const result = await uploadImage(fd);
             if (result.error || !result.url) {
                 alert("이미지 업로드에 실패했습니다.\n" +
-                    (result.error || "알 수 없는 오류") +
-                    "\n\n※ Supabase Storage에 'blog-images' 버킷이 있는지 확인해 주세요.");
+                    (result.error || "알 수 없는 오류"));
             } else {
                 const markdown = `\n![${file.name}](${result.url})\n`;
                 setContent((prev) => prev + markdown);
@@ -59,7 +81,6 @@ export default function WritePage() {
             alert("이미지 업로드 중 오류가 발생했습니다.");
         } finally {
             setIsUploading(false);
-            // Reset file input so same file can be re-selected
             if (fileInputRef.current) fileInputRef.current.value = "";
         }
     };
@@ -77,12 +98,12 @@ export default function WritePage() {
             formData.append("content", content);
             formData.append("category_id", categoryId);
 
-            const result = await publishPost(formData);
+            const result = await updatePost(postId, formData);
 
             if (result.error) {
-                alert("Failed to publish: " + result.error);
+                alert("Failed to update: " + result.error);
             } else {
-                router.push("/");
+                router.push(`/posts/${postId}`);
             }
         } catch (error) {
             console.error(error);
@@ -96,8 +117,6 @@ export default function WritePage() {
         const name = prompt("새 카테고리 이름을 입력하세요:");
         if (!name) return;
 
-        // Generate a basic slug: lowercase, replace spaces with hyphens
-        // Allows English letters, numbers, Korean characters, and hyphens
         const slug = name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9가-힣\-]/g, '');
 
         if (!slug) {
@@ -122,6 +141,10 @@ export default function WritePage() {
         }
     };
 
+    if (isLoading) {
+        return <div className="min-h-screen bg-[#0F111A] flex items-center justify-center text-white">Loading...</div>;
+    }
+
     return (
         <div className="min-h-screen bg-[#0F111A] text-gray-200 flex flex-col font-sans">
             {/* Header */}
@@ -134,7 +157,7 @@ export default function WritePage() {
                         </span>
                     </div>
                     <div className="h-6 w-px bg-gray-800"></div>
-                    <span className="text-sm text-gray-400">Draft / New Post</span>
+                    <span className="text-sm text-gray-400">Editing Post</span>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -165,15 +188,18 @@ export default function WritePage() {
                         </button>
                     </div>
 
-                    <button className="px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors line-clamp-1">
-                        Save Draft
+                    <button
+                        onClick={() => router.push(`/posts/${postId}`)}
+                        className="px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors line-clamp-1"
+                    >
+                        취소
                     </button>
                     <button
                         onClick={handlePublish}
                         disabled={isPublishing}
                         className="px-4 py-1.5 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50"
                     >
-                        {isPublishing ? "Publishing..." : "Publish"}
+                        {isPublishing ? "Saving..." : "Save Changes"}
                     </button>
 
                     <div className="ml-2 w-8 h-8 rounded-full bg-gray-600 overflow-hidden border border-gray-500 flex items-center justify-center">

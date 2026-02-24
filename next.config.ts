@@ -7,8 +7,19 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'upbmzieyaoaydqohngfm.supabase.co',
+      },
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '100mb',
+    },
   },
 };
 
+
 export default nextConfig;
+
