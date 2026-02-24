@@ -49,7 +49,6 @@ export async function updatePost(postId: string, formData: FormData) {
             excerpt,
             category_id,
             image_url,
-            updated_at: new Date().toISOString()
         })
         .eq('id', postId)
         .select()

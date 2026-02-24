@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Share2, Twitter, Facebook, Link as LinkIcon } from 'lucide-react';
+import Link from 'next/link';
+import { Share2, Twitter, Facebook, Link as LinkIcon, Edit } from 'lucide-react';
 import { deletePost } from '@/app/actions';
 
 interface PostActionsProps {
@@ -42,13 +43,22 @@ export default function PostActions({ postId, isAuthor }: PostActionsProps) {
     return (
         <div className="flex items-center gap-2">
             {isAuthor && (
-                <button
-                    onClick={handleDeletePost}
-                    disabled={isDeleting}
-                    className="text-sm font-medium px-3 py-1.5 rounded-md text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50 mr-4"
-                >
-                    {isDeleting ? "삭제 중..." : "삭제"}
-                </button>
+                <div className="flex items-center gap-2 mr-4">
+                    <Link
+                        href={`/edit/${postId}`}
+                        className="text-sm font-medium px-3 py-1.5 rounded-md text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors flex items-center gap-1.5"
+                    >
+                        <Edit className="w-4 h-4" />
+                        수정
+                    </Link>
+                    <button
+                        onClick={handleDeletePost}
+                        disabled={isDeleting}
+                        className="text-sm font-medium px-3 py-1.5 rounded-md text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50"
+                    >
+                        {isDeleting ? "삭제 중..." : "삭제"}
+                    </button>
+                </div>
             )}
             <span className="text-sm font-medium mr-2 text-zinc-500 dark:text-zinc-400">공유하기</span>
             <button

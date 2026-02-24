@@ -102,7 +102,6 @@ export default function Editor({ value, onChange }: EditorProps) {
 
     return (
         <div
-            data-color-mode="dark"
             className={`h-full w-full relative ${isUploading ? 'opacity-80' : ''}`}
             onPaste={handlePaste}
             onDrop={handleDrop}

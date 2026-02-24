@@ -96,8 +96,8 @@ export default async function PostDetailPage({
                     </h1>
                 </div>
 
-                {/* Meta data row: Author, Date, Share */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between py-6 border-y border-zinc-200 dark:border-zinc-800 mb-10 gap-4">
+                {/* Meta data row: Author, Date, Actions */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between py-6 border-y border-zinc-200 dark:border-zinc-800 mb-6 gap-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden flex items-center justify-center shrink-0">
                             <span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">A</span>
@@ -109,21 +109,25 @@ export default async function PostDetailPage({
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <LikeButton
-                            postId={post.id}
-                            initialIsLiked={isLiked}
-                            initialLikesCount={likesCount || 0}
-                            isLoggedIn={!!user}
-                        />
-                        <a
-                            href="#comments"
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                        >
-                            <MessageSquare className="w-4 h-4" />
-                            <span>댓글 {comments.length || 0}개</span>
-                        </a>
                         <PostActions postId={post.id} isAuthor={!!isAuthor} />
                     </div>
+                </div>
+
+                {/* Engagement Metrics row: Likes, Comments */}
+                <div className="flex items-center justify-end gap-4 mb-10 pr-2 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+                    <LikeButton
+                        postId={post.id}
+                        initialIsLiked={isLiked}
+                        initialLikesCount={likesCount || 0}
+                        isLoggedIn={!!user}
+                    />
+                    <a
+                        href="#comments"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                    >
+                        <MessageSquare className="w-4 h-4" />
+                        <span>댓글 {comments.length || 0}개</span>
+                    </a>
                 </div>
 
                 {/* Thumbnail */}

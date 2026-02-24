@@ -142,29 +142,29 @@ export default function EditPage() {
     };
 
     if (isLoading) {
-        return <div className="min-h-screen bg-[#0F111A] flex items-center justify-center text-white">Loading...</div>;
+        return <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center text-zinc-900 dark:text-zinc-50 font-sans">Loading...</div>;
     }
 
     return (
-        <div className="min-h-screen bg-[#0F111A] text-gray-200 flex flex-col font-sans">
+        <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50 flex flex-col font-sans">
             {/* Header */}
-            <header className="h-16 border-b border-slate-800/60 flex items-center justify-between px-6 shrink-0">
+            <header className="h-16 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-6 shrink-0">
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
                         <Hexagon className="w-6 h-6 text-blue-500 fill-blue-500" />
-                        <span className="text-xl font-bold text-white tracking-tight">
+                        <span className="text-xl font-bold text-zinc-900 dark:text-white tracking-tight">
                             DevBlog<span className="text-blue-500 font-normal">Editor</span>
                         </span>
                     </div>
-                    <div className="h-6 w-px bg-gray-800"></div>
-                    <span className="text-sm text-gray-400">Editing Post</span>
+                    <div className="h-6 w-px bg-zinc-300 dark:bg-zinc-800"></div>
+                    <span className="text-sm text-zinc-500 dark:text-zinc-400">Editing Post</span>
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <button className="p-2 text-gray-400 hover:text-white transition-colors">
+                    <button className="p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
                         <Settings className="w-5 h-5" />
                     </button>
-                    <button className="p-2 text-gray-400 hover:text-white pb-2 pr-2 border-r border-gray-800 transition-colors">
+                    <button className="p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white pb-2 pr-2 border-r border-zinc-300 dark:border-zinc-800 transition-colors">
                         <HelpCircle className="w-5 h-5" />
                     </button>
 
@@ -172,7 +172,7 @@ export default function EditPage() {
                         <select
                             value={categoryId}
                             onChange={(e) => setCategoryId(e.target.value)}
-                            className="bg-[#1A1D27] text-sm text-gray-300 border border-gray-700 rounded-md px-3 py-1.5 focus:outline-none focus:border-blue-500 max-w-[150px] truncate"
+                            className="bg-white dark:bg-zinc-900 text-sm text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-1.5 focus:outline-none focus:border-blue-500 max-w-[150px] truncate"
                         >
                             {categories.map((cat) => (
                                 <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -182,7 +182,7 @@ export default function EditPage() {
                             onClick={handleCreateCategory}
                             disabled={isCreatingCategory}
                             title="새 카테고리 추가"
-                            className="p-1.5 text-gray-400 hover:text-white bg-[#1A1D27] hover:bg-gray-800 border border-gray-700 rounded-md transition-colors disabled:opacity-50"
+                            className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md transition-colors disabled:opacity-50"
                         >
                             <Plus className="w-4 h-4" />
                         </button>
@@ -190,7 +190,7 @@ export default function EditPage() {
 
                     <button
                         onClick={() => router.push(`/posts/${postId}`)}
-                        className="px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors line-clamp-1"
+                        className="px-4 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors line-clamp-1"
                     >
                         취소
                     </button>
@@ -202,8 +202,8 @@ export default function EditPage() {
                         {isPublishing ? "Saving..." : "Save Changes"}
                     </button>
 
-                    <div className="ml-2 w-8 h-8 rounded-full bg-gray-600 overflow-hidden border border-gray-500 flex items-center justify-center">
-                        <span className="text-xs text-gray-300 font-bold">ME</span>
+                    <div className="ml-2 w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden border border-zinc-300 dark:border-zinc-700 flex items-center justify-center">
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 font-bold">ME</span>
                     </div>
                 </div>
             </header>
@@ -215,10 +215,10 @@ export default function EditPage() {
                     placeholder="New post title here..."
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full bg-transparent border-none text-4xl font-bold text-white placeholder-gray-600 focus:outline-none focus:ring-0 mb-6"
+                    className="w-full bg-transparent border-none text-4xl font-bold text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-0 mb-6"
                 />
 
-                <div className="flex-1 min-h-[500px] border border-gray-800 rounded-lg overflow-hidden editor-container">
+                <div className="flex-1 min-h-[500px] border border-zinc-300 dark:border-zinc-800 rounded-lg overflow-hidden editor-container">
                     <Editor
                         value={content}
                         onChange={(val) => setContent(val || "")}
@@ -226,7 +226,7 @@ export default function EditPage() {
                 </div>
             </main>
 
-            {/* Basic styles to override react-md-editor defaults to match the dark theme */}
+            {/* Basic styles to override react-md-editor defaults */}
             <style jsx global>{`
         .editor-container .w-md-editor {
           background-color: transparent !important;
@@ -234,22 +234,12 @@ export default function EditPage() {
           border: none !important;
         }
         .editor-container .w-md-editor-toolbar {
-          background-color: #1A1D27 !important;
-          border-bottom: 1px solid #1F2937 !important;
           padding: 8px 12px !important;
-        }
-        .editor-container .w-md-editor-toolbar li button {
-          color: #9CA3AF !important;
-        }
-        .editor-container .w-md-editor-toolbar li button:hover {
-          color: #F3F4F6 !important;
-          background-color: #374151 !important;
         }
         .editor-container .w-md-editor-content {
           background-color: transparent !important;
         }
         .editor-container .w-md-editor-text-input {
-          color: #D1D5DB !important;
           font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
           font-size: 15px !important;
           line-height: 1.6 !important;

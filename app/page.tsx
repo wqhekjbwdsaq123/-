@@ -19,6 +19,7 @@ export default async function Home({
   const resolvedSearchParams = await searchParams;
   const activeCategory = typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : 'All';
   const activeSort = typeof resolvedSearchParams.sort === 'string' ? resolvedSearchParams.sort : 'latest';
+  const activeQuery = typeof resolvedSearchParams.q === 'string' ? resolvedSearchParams.q : '';
   const pageStr = typeof resolvedSearchParams.page === 'string' ? resolvedSearchParams.page : '1';
   const currentPage = parseInt(pageStr, 10) || 1;
 
@@ -39,6 +40,11 @@ export default async function Home({
   // Apply category filter
   if (activeCategory !== 'All') {
     query = query.eq('category_name', activeCategory);
+  }
+
+  // Apply search query filter
+  if (activeQuery) {
+    query = query.ilike('title', `%${activeQuery}%`);
   }
 
   // Apply pagination
