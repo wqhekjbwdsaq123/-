@@ -98,15 +98,17 @@ export default function PostActions({ postId, isAuthor, isAdmin = false }: PostA
                     </button>
                 </div>
             )}
-            <span className="text-sm font-medium mr-2 text-zinc-500 dark:text-zinc-400">공유/신고</span>
-            <button
-                onClick={handleReportPost}
-                disabled={isReporting}
-                className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
-                aria-label="게시글 신고"
-            >
-                {isReporting ? "..." : "신고"}
-            </button>
+            <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg pr-1 pl-3 py-1">
+                <span className="text-sm font-medium mr-2 text-zinc-500 dark:text-zinc-400">공유</span>
+                <button
+                    onClick={handleReportPost}
+                    disabled={isReporting}
+                    className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
+                    aria-label="게시글 신고"
+                >
+                    {isReporting ? "..." : "신고"}
+                </button>
+            </div>
             <button
                 onClick={handleCopyLink}
                 className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white relative group"
