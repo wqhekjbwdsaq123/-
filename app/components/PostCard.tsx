@@ -35,6 +35,7 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                             src={post.image_url}
                             alt={post.title}
                             fill
+                            unoptimized
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
@@ -47,14 +48,22 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                     </div>
                 )}
                 <div className="p-6 flex flex-col flex-1">
-                    <div className="flex items-center gap-2 mb-3 w-full">
-                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20 whitespace-nowrap max-w-[120px] truncate">
+                    <div className="mb-3 w-full">
+                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20 whitespace-nowrap max-w-full truncate">
                             {post.category_name || 'All'}
                         </span>
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    </div>
+                    <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {post.title}
+                    </h2>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 mb-4 flex-1">
+                        {post.excerpt}
+                    </p>
+                    <div className="mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
                             {formattedDate}
                         </span>
-                        <div className="flex items-center gap-2 ml-auto text-zinc-400 dark:text-zinc-500">
+                        <div className="flex items-center gap-3 text-zinc-400 dark:text-zinc-500">
                             <div className="flex items-center gap-1">
                                 <Heart className="w-3.5 h-3.5" />
                                 <span className="text-xs">{likesCount}</span>
@@ -63,7 +72,7 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                                 <MessageSquare className="w-3.5 h-3.5" />
                                 <span className="text-xs">{commentsCount}</span>
                             </div>
-                            <div className="z-10 relative ml-1 border-l border-zinc-200 dark:border-zinc-800 pl-2">
+                            <div className="z-10 relative ml-1 pl-3 border-l border-zinc-200 dark:border-zinc-800 flex items-center">
                                 <BookmarkButton
                                     postId={post.id}
                                     initialIsBookmarked={post.isBookmarked || false}
@@ -71,17 +80,6 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                                 />
                             </div>
                         </div>
-                    </div>
-                    <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {post.title}
-                    </h2>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 mb-4 flex-1">
-                        {post.excerpt}
-                    </p>
-                    <div className="mt-auto">
-                        <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                            자세히 보기 &rarr;
-                        </span>
                     </div>
                 </div>
             </Link>
