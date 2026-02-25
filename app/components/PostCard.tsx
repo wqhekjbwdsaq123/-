@@ -26,11 +26,11 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
     const commentsCount = post.comments_count || 0;
 
     return (
-        <article className="flex flex-col rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 w-full text-left group relative">
+        <article className="flex flex-col rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 w-full aspect-square text-left group relative">
             <Link href={`/posts/${post.id}`} className="flex flex-col h-full">
                 {/* Thumbnail - only shown if image_url exists */}
                 {post.image_url ? (
-                    <div className="relative w-full aspect-video">
+                    <div className="relative w-full flex-1 min-h-[40%]">
                         <Image
                             src={post.image_url}
                             alt={post.title}
@@ -41,25 +41,25 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                         />
                     </div>
                 ) : (
-                    <div className="w-full aspect-video bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center">
+                    <div className="w-full flex-1 min-h-[40%] bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-zinc-300 dark:text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
                 )}
-                <div className="p-6 flex flex-col flex-1">
-                    <div className="mb-3 w-full">
-                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20 whitespace-nowrap max-w-full truncate">
+                <div className="p-4 flex flex-col flex-1 shrink-0 bg-white dark:bg-zinc-900 z-10">
+                    <div className="mb-2 w-full">
+                        <span className="inline-flex items-center rounded-sm bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20 whitespace-nowrap max-w-full truncate uppercase tracking-wider">
                             {post.category_name || 'All'}
                         </span>
                     </div>
-                    <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h2 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white mb-1.5 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
                         {post.title}
                     </h2>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-5 break-words mb-4 flex-1">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 break-words mb-3 flex-1 leading-relaxed">
                         {post.excerpt}
                     </p>
-                    <div className="mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                    <div className="mt-auto pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                         <span className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
                             {formattedDate}
                         </span>
