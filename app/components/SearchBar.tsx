@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { searchPosts } from '@/app/actions/search';
 
 export default function SearchBar() {
     const [query, setQuery] = useState('');

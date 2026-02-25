@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic";
 import { useState, useRef } from "react";
-import { uploadImage } from "../upload-action";
 import { toast } from "sonner";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
@@ -38,9 +37,14 @@ export default function Editor({ value, onChange }: EditorProps) {
             const formData = new FormData();
             formData.append('file', file);
 
-            const result = await uploadImage(formData);
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
 
-            if (result.error || !result.url) {
+            const result = await response.json();
+
+            if (!response.ok || result.error || !result.url) {
                 toast.error(result.error || "이미지 업로드에 실패했습니다.");
             } else {
                 const imageMarkdown = `\n![${file.name}](${result.url})\n`;

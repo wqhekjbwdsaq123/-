@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { deleteComment } from '../actions/comments';
 import { MessageSquareReply, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -53,7 +52,15 @@ export default function CommentItem({ comment, postId, currentUserId, postAuthor
 
         setIsDeleting(true);
         try {
-            await deleteComment(comment.id, postId);
+            const response = await fetch(`/api/comments/${comment.id}`, {
+                method: 'DELETE',
+            });
+            const result = await response.json();
+
+            if (!response.ok || result.error) {
+                throw new Error(result.error || '삭제 실패');
+            }
+            window.location.reload();
         } catch (error) {
             console.error('Failed to delete comment:', error);
             setIsDeleting(false);

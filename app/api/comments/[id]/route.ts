@@ -4,11 +4,12 @@ import { revalidatePath } from 'next/cache';
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const supabase = await createClient();
-        const commentId = params.id;
+        const resolvedParams = await params;
+        const commentId = resolvedParams.id;
 
         // Next.js Route handlers in 15.0.0 require params to be treated as a Promise.  We don't need params here, so I'm omitting it and getting postId from the query params if needed, or just revalidating from the DB if really needed. Wait, deleteComment needs postId for revalidatePath. Let's pass it in search params or just rely on client refresh. Let's pass it via body or search params. Using body in DELETE is allowed but non-standard. URL search params is better.
         const { searchParams } = new URL(request.url);

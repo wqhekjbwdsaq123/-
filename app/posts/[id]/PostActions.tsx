@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Share2, Twitter, Facebook, Link as LinkIcon, Edit } from 'lucide-react';
-import { deletePost } from '@/app/actions';
 
 interface PostActionsProps {
     postId: string;

@@ -4,9 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Plus, Settings, HelpCircle, Hexagon, ImagePlus } from "lucide-react";
 import Editor from "@/app/write/components/Editor";
-import { updatePost } from "../actions";
-import { createCategory } from "@/app/actions/categories";
-import { uploadImage } from "@/app/write/upload-action";
 import { createClient } from '@/utils/supabase/client';
 
 export default function EditPage() {
@@ -68,8 +65,14 @@ export default function EditPage() {
         try {
             const fd = new FormData();
             fd.append("file", file);
-            const result = await uploadImage(fd);
-            if (result.error || !result.url) {
+
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: fd,
+            });
+            const result = await response.json();
+
+            if (!response.ok || result.error || !result.url) {
                 alert("이미지 업로드에 실패했습니다.\n" +
                     (result.error || "알 수 없는 오류"));
             } else {
@@ -93,17 +96,29 @@ export default function EditPage() {
 
         setIsPublishing(true);
         try {
-            const formData = new FormData();
-            formData.append("title", title);
-            formData.append("content", content);
-            formData.append("category_id", categoryId);
+            const imageMatch = content.match(/!\[.*?\\](https?:\/\/.*?\.(?:png|jpg|jpeg|gif|svg))/);
+            const image_url = imageMatch ? imageMatch[1] : null;
 
-            const result = await updatePost(postId, formData);
+            const response = await fetch(`/api/posts/${postId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title,
+                    content,
+                    category_id: categoryId,
+                    image_url
+                }),
+            });
 
-            if (result.error) {
-                alert("Failed to update: " + result.error);
+            const result = await response.json();
+
+            if (!response.ok || result.error) {
+                alert("Failed to update: " + (result.error || "알 수 없는 오류"));
             } else {
                 router.push(`/posts/${postId}`);
+                router.refresh();
             }
         } catch (error) {
             console.error(error);
@@ -126,9 +141,17 @@ export default function EditPage() {
 
         setIsCreatingCategory(true);
         try {
-            const result = await createCategory(name, slug);
-            if (result.error) {
-                alert(result.error);
+            const response = await fetch('/api/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, slug }),
+            });
+            const result = await response.json();
+
+            if (!response.ok || result.error) {
+                alert(result.error || "카테고리 생성에 실패했습니다.");
             } else if (result.category) {
                 setCategories(prev => [...prev, result.category].sort((a, b) => a.name.localeCompare(b.name)));
                 setCategoryId(result.category.id);

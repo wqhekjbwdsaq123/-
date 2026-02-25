@@ -4,11 +4,12 @@ import { revalidatePath } from 'next/cache';
 
 export async function POST(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const supabase = await createClient();
-        const commentId = params.id;
+        const resolvedParams = await params;
+        const commentId = resolvedParams.id;
 
         const body = await request.json();
         const { postId } = body;

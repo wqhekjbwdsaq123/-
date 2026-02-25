@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { addComment } from '../actions/comments';
 import { Send } from 'lucide-react';
 
 interface CommentFormProps {
@@ -24,13 +23,26 @@ export default function CommentForm({ postId, parentId, onSuccess }: CommentForm
         setError(null);
 
         try {
-            const result = await addComment(postId, content, parentId);
+            const response = await fetch('/api/comments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    postId,
+                    content,
+                    parentId,
+                }),
+            });
 
-            if (result.error) {
-                setError(result.error);
+            const result = await response.json();
+
+            if (!response.ok || result.error) {
+                setError(result.error || '댓글 작성 중 오류가 발생했습니다.');
             } else {
                 setContent('');
                 if (onSuccess) onSuccess();
+                window.location.reload();
             }
         } catch (err) {
             setError('댓글 작성 중 오류가 발생했습니다.');

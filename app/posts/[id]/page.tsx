@@ -9,7 +9,6 @@ import remarkGfm from 'remark-gfm';
 import PostActions from './PostActions';
 import LikeButton from './LikeButton';
 import CommentsSection from '@/app/components/CommentsSection';
-import { getComments } from '@/app/actions/comments';
 
 export default async function PostDetailPage({
     params,
@@ -47,8 +46,21 @@ export default async function PostDetailPage({
     }
 
     // Fetch comments
-    const comments = await getComments(id);
-
+    const { data: comments, error: commentsError } = await supabase
+        .from('comments')
+        .select(`
+            id,
+            content,
+            created_at,
+            user_id,
+            parent_id,
+            user:users!user_id(
+                email
+            ),
+            likes:comment_likes(user_id)
+        `)
+        .eq('post_id', id)
+        .order('created_at', { ascending: true });
     if (error || !post) {
         return (
             <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-black font-sans text-zinc-900 dark:text-zinc-50">
@@ -126,7 +138,7 @@ export default async function PostDetailPage({
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                     >
                         <MessageSquare className="w-4 h-4" />
-                        <span>댓글 {comments.length || 0}개</span>
+                        <span>댓글 {comments?.length || 0}개</span>
                     </a>
                 </div>
 

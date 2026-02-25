@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
-import { toggleCommentLike } from '../actions/comments';
 import { useRouter } from 'next/navigation';
 
 interface CommentLikeButtonProps {

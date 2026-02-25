@@ -1,13 +1,16 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { signOut } from '@/app/actions';
 
 export default function SignOutButton() {
     const router = useRouter();
     const handleSignOut = async () => {
-        await signOut();
-        router.refresh();
+        try {
+            await fetch('/api/auth/signout', { method: 'POST' });
+            router.refresh();
+        } catch (error) {
+            console.error('Sign out error:', error);
+        }
     };
 
     return (

@@ -4,9 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Settings, HelpCircle, Hexagon, ImagePlus } from "lucide-react";
 import Editor from "./components/Editor";
-import { publishPost } from "./actions";
-import { createCategory } from "@/app/actions/categories";
-import { uploadImage } from "./upload-action";
 import { createClient } from '@/utils/supabase/client';
 
 export default function WritePage() {
@@ -78,17 +75,29 @@ export default function WritePage() {
 
         setIsPublishing(true);
         try {
-            const formData = new FormData();
-            formData.append("title", title);
-            formData.append("content", content);
-            formData.append("category_id", categoryId);
+            const imageMatch = content.match(/!\[.*?\\](https?:\/\/.*?\.(?:png|jpg|jpeg|gif|svg))/);
+            const image_url = imageMatch ? imageMatch[1] : null;
 
-            const result = await publishPost(formData);
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title,
+                    content,
+                    category_id: categoryId,
+                    image_url
+                }),
+            });
 
-            if (result.error) {
-                alert("Failed to publish: " + result.error);
+            const result = await response.json();
+
+            if (!response.ok || result.error) {
+                alert("Failed to publish: " + (result.error || "알 수 없는 오류"));
             } else {
                 router.push("/");
+                router.refresh(); // 홈 화면 갱신
             }
         } catch (error) {
             console.error(error);

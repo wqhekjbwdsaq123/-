@@ -4,11 +4,12 @@ import { revalidatePath } from 'next/cache';
 
 export async function POST(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const supabase = await createClient();
-        const postId = params.id;
+        const resolvedParams = await params;
+        const postId = resolvedParams.id;
 
         const { data: { user }, error: userError } = await supabase.auth.getUser();
 

@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react'
 import { Mail, Key, Loader2, LogIn, UserPlus } from 'lucide-react'
-import { login, signup } from '../actions'
+
+// login and signup actions have been replaced with REST APIs
 
 interface AuthFormProps {
     initialMode?: 'login' | 'signup';
@@ -16,10 +17,29 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
     async function handleSubmit(formData: FormData) {
         setError(null)
         startTransition(async () => {
-            const action = isLogin ? login : signup
-            const result = await action(formData)
-            if (result?.error) {
-                setError(result.error)
+            try {
+                const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup'
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: formData.get('email'),
+                        password: formData.get('password'),
+                    }),
+                })
+
+                const result = await response.json()
+
+                if (!response.ok || result.error) {
+                    setError(result.error || '인증 과정에서 오류가 발생했습니다.')
+                } else if (result.success) {
+                    window.location.href = '/';
+                }
+            } catch (err) {
+                console.error("Auth error:", err);
+                setError('서버와 통신하는 데 실패했습니다.');
             }
         })
     }
