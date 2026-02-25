@@ -56,7 +56,7 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                     <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {post.title}
                     </h2>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 mb-4 flex-1">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-5 break-words mb-4 flex-1">
                         {post.excerpt}
                     </p>
                     <div className="mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
