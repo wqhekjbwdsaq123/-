@@ -30,7 +30,7 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
             <Link href={`/posts/${post.id}`} className="flex flex-col h-full">
                 {/* Thumbnail - only shown if image_url exists */}
                 {post.image_url ? (
-                    <div className="relative w-full flex-1 min-h-[40%]">
+                    <div className="relative w-full h-[45%] shrink-0">
                         <Image
                             src={post.image_url}
                             alt={post.title}
@@ -41,25 +41,25 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                         />
                     </div>
                 ) : (
-                    <div className="w-full flex-1 min-h-[40%] bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center">
+                    <div className="w-full h-[45%] shrink-0 bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-zinc-300 dark:text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
                 )}
-                <div className="p-4 flex flex-col flex-1 shrink-0 bg-white dark:bg-zinc-900 z-10">
-                    <div className="mb-2 w-full">
+                <div className="p-4 flex flex-col flex-1 min-h-0 overflow-hidden bg-white dark:bg-zinc-900 z-10 w-full">
+                    <div className="mb-2 shrink-0">
                         <span className="inline-flex items-center rounded-sm bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20 whitespace-nowrap max-w-full truncate uppercase tracking-wider">
                             {post.category_name || 'All'}
                         </span>
                     </div>
-                    <h2 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white mb-1.5 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                    <h2 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white mb-1.5 line-clamp-2 shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
                         {post.title}
                     </h2>
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 break-words mb-0 flex-1 leading-relaxed">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 break-words mb-2 flex-1 overflow-hidden leading-relaxed">
                         {post.excerpt}
                     </p>
-                    <div className="mt-auto pt-0 flex items-center justify-between">
+                    <div className="mt-auto pt-0 shrink-0 flex items-center justify-between">
                         <span className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
                             {formattedDate}
                         </span>
