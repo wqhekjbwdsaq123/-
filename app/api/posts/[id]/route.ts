@@ -63,14 +63,16 @@ export async function PATCH(
             return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
         }
 
+        const excerpt = content.substring(0, 150) + (content.length > 150 ? "..." : "");
+
         const { error } = await supabase
             .from('posts')
             .update({
                 title,
                 content,
+                excerpt,
                 category_id,
-                image_url,
-                updated_at: new Date().toISOString()
+                image_url
             })
             .eq('id', postId)
             .eq('author_id', user.id);
