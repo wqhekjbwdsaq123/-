@@ -47,8 +47,8 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                     </div>
                 )}
                 <div className="p-6 flex flex-col flex-1">
-                    <div className="flex items-center gap-2 mb-3">
-                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20">
+                    <div className="flex items-center gap-2 mb-3 w-full">
+                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20 whitespace-nowrap max-w-[120px] truncate">
                             {post.category_name || 'All'}
                         </span>
                         <span className="text-xs text-zinc-500 dark:text-zinc-400">

@@ -96,7 +96,7 @@ export default function EditPage() {
 
         setIsPublishing(true);
         try {
-            const imageMatch = content.match(/!\[.*?\\](https?:\/\/.*?\.(?:png|jpg|jpeg|gif|svg))/);
+            const imageMatch = content.match(/!\[.*?\]\((https?:\/\/[^)]+)\)/);
             const image_url = imageMatch ? imageMatch[1] : null;
 
             const response = await fetch(`/api/posts/${postId}`, {
