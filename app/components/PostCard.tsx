@@ -25,8 +25,15 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
     const likesCount = post.likes_count || 0;
     const commentsCount = post.comments_count || 0;
 
+    // Remove markdown image syntax and any other messy stuff from the excerpt for the card preview
+    const cleanExcerpt = (post.excerpt || "")
+        .replace(/!\[.*?\]\([^)]+\)/g, '')
+        .replace(/\[.*?\]\([^)]+\)/g, '')
+        .replace(/[#*`_~]/g, '')
+        .trim();
+
     return (
-        <article className="flex flex-col rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 w-full aspect-[4/5] sm:aspect-[3/4] lg:aspect-[4/5] text-left group relative">
+        <article className="flex flex-col rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 w-full aspect-square text-left group relative">
             <Link href={`/posts/${post.id}`} className="flex flex-col h-full">
                 {/* Thumbnail - only shown if image_url exists */}
                 {post.image_url ? (
@@ -47,7 +54,7 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                         </svg>
                     </div>
                 )}
-                <div className="p-4 flex flex-col flex-1 min-h-0 overflow-hidden bg-white dark:bg-zinc-900 z-10 w-full">
+                <div className="px-4 pt-4 pb-3 flex flex-col flex-1 min-h-0 overflow-hidden bg-white dark:bg-zinc-900 z-10 w-full">
                     <div className="mb-2 shrink-0">
                         <span className="inline-flex items-center rounded-sm bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20 whitespace-nowrap max-w-full truncate uppercase tracking-wider">
                             {post.category_name || 'All'}
@@ -57,7 +64,7 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                         {post.title}
                     </h2>
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 break-words mb-2 flex-1 overflow-hidden leading-relaxed">
-                        {post.excerpt}
+                        {cleanExcerpt}
                     </p>
                     <div className="mt-auto pt-0 shrink-0 flex items-center justify-between">
                         <span className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
