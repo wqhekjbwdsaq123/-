@@ -56,10 +56,10 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                     <h2 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white mb-1.5 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
                         {post.title}
                     </h2>
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 break-words mb-2 flex-1 leading-relaxed">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 break-words mb-0 flex-1 leading-relaxed">
                         {post.excerpt}
                     </p>
-                    <div className="mt-auto pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                    <div className="mt-auto pt-0 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                         <span className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
                             {formattedDate}
                         </span>
