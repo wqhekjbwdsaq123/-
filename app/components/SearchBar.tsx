@@ -43,8 +43,13 @@ export default function SearchBar() {
 
             setIsLoading(true);
             try {
-                const data = await searchPosts(query);
-                setResults(data);
+                const response = await fetch(`/api/posts/search?q=${encodeURIComponent(query)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setResults(data);
+                } else {
+                    setResults([]);
+                }
             } catch (error) {
                 console.error("Failed to search:", error);
                 setResults([]);

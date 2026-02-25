@@ -22,10 +22,17 @@ export default function PostActions({ postId, isAuthor }: PostActionsProps) {
 
         setIsDeleting(true);
         try {
-            const { error } = await deletePost(postId);
+            const response = await fetch(`/api/posts/${postId}`, {
+                method: 'DELETE',
+            });
 
-            if (error) throw new Error(error);
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || '삭제에 실패했습니다.');
+            }
+
             router.push('/');
+            router.refresh(); // 홈 화면 갱신을 위해 추가
         } catch (error: any) {
             console.error('Error deleting post:', error);
             alert(`글 삭제에 실패했습니다: ${error.message}`);

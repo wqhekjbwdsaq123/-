@@ -45,8 +45,14 @@ export default function WritePage() {
         try {
             const fd = new FormData();
             fd.append("file", file);
-            const result = await uploadImage(fd);
-            if (result.error || !result.url) {
+
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: fd,
+            });
+            const result = await response.json();
+
+            if (!response.ok || result.error || !result.url) {
                 alert("이미지 업로드에 실패했습니다.\n" +
                     (result.error || "알 수 없는 오류") +
                     "\n\n※ Supabase Storage에 'blog-images' 버킷이 있는지 확인해 주세요.");
@@ -107,9 +113,17 @@ export default function WritePage() {
 
         setIsCreatingCategory(true);
         try {
-            const result = await createCategory(name, slug);
-            if (result.error) {
-                alert(result.error);
+            const response = await fetch('/api/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, slug }),
+            });
+            const result = await response.json();
+
+            if (!response.ok || result.error) {
+                alert(result.error || "카테고리 생성에 실패했습니다.");
             } else if (result.category) {
                 setCategories(prev => [...prev, result.category].sort((a, b) => a.name.localeCompare(b.name)));
                 setCategoryId(result.category.id);

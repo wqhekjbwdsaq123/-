@@ -40,12 +40,20 @@ export default function CommentLikeButton({
         setIsLoading(true);
 
         try {
-            const result = await toggleCommentLike(commentId, postId);
-            if (result.error) {
+            const response = await fetch(`/api/comments/${commentId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId }),
+            });
+            const result = await response.json();
+
+            if (!response.ok || result.error) {
                 // Revert on error
                 setIsLiked(isLiked);
                 setLikesCount(initialLikesCount);
-                alert(result.error);
+                alert(result.error || '오류가 발생했습니다.');
             } else if (result.isLiked !== undefined) {
                 // Sync with server result just in case
                 setIsLiked(result.isLiked);
@@ -65,8 +73,8 @@ export default function CommentLikeButton({
             onClick={handleLike}
             disabled={isLoading}
             className={`flex items-center gap-1 text-xs font-medium transition-colors ${isLiked
-                    ? 'text-red-500 hover:text-red-600'
-                    : 'text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400'
+                ? 'text-red-500 hover:text-red-600'
+                : 'text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400'
                 }`}
             title={isLiked ? "좋아요 취소" : "좋아요"}
         >

@@ -36,13 +36,20 @@ export default function LikeButton({ postId, initialIsLiked, initialLikesCount, 
             // 1. Optimistically update the UI
             addOptimisticState(newIsLikedState);
 
-            // 2. Perform the server action
-            const result = await toggleLike(postId);
+            try {
+                // 2. Perform the server action
+                const response = await fetch(`/api/posts/${postId}/like`, {
+                    method: 'POST',
+                });
+                const result = await response.json();
 
-            // 3. Handle errors (UI will automatically revert when revalidated, or we can manually trigger a toast)
-            if (result?.error) {
-                toast.error(result.error);
-                // Revert is automatic normally due to revalidation failure, but we could add manual reverting here if needed
+                // 3. Handle errors (UI will automatically revert when revalidated, or we can manually trigger a toast)
+                if (!response.ok || result?.error) {
+                    toast.error(result?.error || '오류가 발생했습니다.');
+                    // Revert is automatic normally due to revalidation failure, but we could add manual reverting here if needed
+                }
+            } catch (error) {
+                toast.error('오류가 발생했습니다.');
             }
         });
     };
