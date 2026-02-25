@@ -66,6 +66,25 @@ export default async function Home({
   const totalPosts = count || 0;
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
 
+  let bookmarkedPostIds = new Set<string>();
+  if (user && posts && posts.length > 0) {
+    const postIds = posts.map(p => p.id);
+    const { data: userBookmarks } = await supabase
+      .from('bookmarks')
+      .select('post_id')
+      .eq('user_id', user.id)
+      .in('post_id', postIds);
+
+    if (userBookmarks) {
+      bookmarkedPostIds = new Set(userBookmarks.map(b => b.post_id));
+    }
+  }
+
+  const postsWithBookmarks = posts?.map((post) => ({
+    ...post,
+    isBookmarked: bookmarkedPostIds.has(post.id)
+  }));
+
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-black font-sans text-zinc-900 dark:text-zinc-50">
       <Header user={user} />
@@ -82,8 +101,8 @@ export default async function Home({
         {posts && posts.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+              {postsWithBookmarks?.map((post) => (
+                <PostCard key={post.id} post={post} isLoggedIn={!!user} />
               ))}
             </div>
 

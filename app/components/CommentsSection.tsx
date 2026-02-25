@@ -12,9 +12,10 @@ interface CommentsSectionProps {
     comments: CommentType[];
     currentUserId?: string;
     isPostAuthor: boolean;
+    isAdmin?: boolean;
 }
 
-export default function CommentsSection({ postId, comments, currentUserId, isPostAuthor }: CommentsSectionProps) {
+export default function CommentsSection({ postId, comments, currentUserId, isPostAuthor, isAdmin = false }: CommentsSectionProps) {
     // Build the comment tree
     const buildCommentTree = (flatComments: CommentType[]) => {
         const commentMap = new Map<string, CommentType>();
@@ -74,6 +75,7 @@ export default function CommentsSection({ postId, comments, currentUserId, isPos
                             postId={postId}
                             currentUserId={currentUserId}
                             postAuthorId={isPostAuthor ? currentUserId : undefined} // Pass postAuthorId directly. If current user is author, pass their ID.
+                            isAdmin={isAdmin}
                         />
                     ))
                 ) : (

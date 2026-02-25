@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 import PostActions from './PostActions';
 import LikeButton from './LikeButton';
 import CommentsSection from '@/app/components/CommentsSection';
+import BookmarkButton from '@/app/components/BookmarkButton';
 
 export default async function PostDetailPage({
     params,
@@ -20,6 +21,16 @@ export default async function PostDetailPage({
     const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
+
+    let isAdmin = false;
+    if (user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+        isAdmin = profile?.role === 'admin';
+    }
 
     const { data: post, error } = await supabase
         .from('posts')
@@ -43,6 +54,18 @@ export default async function PostDetailPage({
             .eq('user_id', user.id)
             .single();
         isLiked = !!userLike;
+    }
+
+    // Check if the current user bookmarked the post
+    let isBookmarked = false;
+    if (user) {
+        const { data: userBookmark } = await supabase
+            .from('bookmarks')
+            .select('id')
+            .eq('post_id', id)
+            .eq('user_id', user.id)
+            .single();
+        isBookmarked = !!userBookmark;
     }
 
     // Fetch comments
@@ -121,16 +144,21 @@ export default async function PostDetailPage({
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <PostActions postId={post.id} isAuthor={!!isAuthor} />
+                        <PostActions postId={post.id} isAuthor={!!isAuthor} isAdmin={isAdmin} />
                     </div>
                 </div>
 
-                {/* Engagement Metrics row: Likes, Comments */}
+                {/* Engagement Metrics row: Likes, Bookmarks, Comments */}
                 <div className="flex items-center justify-end gap-4 mb-10 pr-2 pb-6 border-b border-zinc-200 dark:border-zinc-800">
                     <LikeButton
                         postId={post.id}
                         initialIsLiked={isLiked}
                         initialLikesCount={likesCount || 0}
+                        isLoggedIn={!!user}
+                    />
+                    <BookmarkButton
+                        postId={post.id}
+                        initialIsBookmarked={isBookmarked}
                         isLoggedIn={!!user}
                     />
                     <a

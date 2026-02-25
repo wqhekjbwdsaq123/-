@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, MessageSquare } from 'lucide-react';
+import BookmarkButton from './BookmarkButton';
 
 interface Post {
     id: string;
@@ -11,9 +12,10 @@ interface Post {
     created_at: string;
     likes_count?: number;
     comments_count?: number;
+    isBookmarked?: boolean;
 }
 
-export default function PostCard({ post }: { post: Post }) {
+export default function PostCard({ post, isLoggedIn = false }: { post: Post, isLoggedIn?: boolean }) {
     const formattedDate = new Date(post.created_at).toLocaleDateString('ko-KR', {
         year: 'numeric',
         month: 'long',
@@ -24,7 +26,7 @@ export default function PostCard({ post }: { post: Post }) {
     const commentsCount = post.comments_count || 0;
 
     return (
-        <article className="flex flex-col rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 w-full text-left group">
+        <article className="flex flex-col rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 w-full text-left group relative">
             <Link href={`/posts/${post.id}`} className="flex flex-col h-full">
                 {/* Thumbnail - only shown if image_url exists */}
                 {post.image_url ? (
@@ -52,7 +54,7 @@ export default function PostCard({ post }: { post: Post }) {
                         <span className="text-xs text-zinc-500 dark:text-zinc-400">
                             {formattedDate}
                         </span>
-                        <div className="flex items-center gap-3 ml-auto text-zinc-400 dark:text-zinc-500">
+                        <div className="flex items-center gap-2 ml-auto text-zinc-400 dark:text-zinc-500">
                             <div className="flex items-center gap-1">
                                 <Heart className="w-3.5 h-3.5" />
                                 <span className="text-xs">{likesCount}</span>
@@ -60,6 +62,13 @@ export default function PostCard({ post }: { post: Post }) {
                             <div className="flex items-center gap-1">
                                 <MessageSquare className="w-3.5 h-3.5" />
                                 <span className="text-xs">{commentsCount}</span>
+                            </div>
+                            <div className="z-10 relative ml-1 border-l border-zinc-200 dark:border-zinc-800 pl-2">
+                                <BookmarkButton
+                                    postId={post.id}
+                                    initialIsBookmarked={post.isBookmarked || false}
+                                    isLoggedIn={isLoggedIn}
+                                />
                             </div>
                         </div>
                     </div>

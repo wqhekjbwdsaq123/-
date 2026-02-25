@@ -8,12 +8,14 @@ import { Share2, Twitter, Facebook, Link as LinkIcon, Edit } from 'lucide-react'
 interface PostActionsProps {
     postId: string;
     isAuthor: boolean;
+    isAdmin?: boolean;
 }
 
-export default function PostActions({ postId, isAuthor }: PostActionsProps) {
+export default function PostActions({ postId, isAuthor, isAdmin = false }: PostActionsProps) {
     const router = useRouter();
     const [isDeleting, setIsDeleting] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
+    const [isReporting, setIsReporting] = useState(false);
 
     const handleDeletePost = async () => {
         const confirmed = window.confirm("정말로 이 글을 삭제하시겠습니까?");
@@ -46,17 +48,47 @@ export default function PostActions({ postId, isAuthor }: PostActionsProps) {
         setTimeout(() => setCopySuccess(false), 2000);
     };
 
+    const handleReportPost = async () => {
+        const reason = window.prompt("신고 사유를 입력해주세요:");
+        if (!reason) return;
+
+        setIsReporting(true);
+        try {
+            const response = await fetch(`/api/reports`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ post_id: postId, reason }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || '신고에 실패했습니다.');
+            }
+
+            alert("신고가 접수되었습니다.");
+        } catch (error: any) {
+            console.error('Error reporting post:', error);
+            alert(`신고 접수에 실패했습니다: ${error.message}`);
+        } finally {
+            setIsReporting(false);
+        }
+    };
+
     return (
         <div className="flex items-center gap-2">
-            {isAuthor && (
+            {(isAuthor || isAdmin) && (
                 <div className="flex items-center gap-2 mr-4">
-                    <Link
-                        href={`/edit/${postId}`}
-                        className="text-sm font-medium px-3 py-1.5 rounded-md text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors flex items-center gap-1.5"
-                    >
-                        <Edit className="w-4 h-4" />
-                        수정
-                    </Link>
+                    {isAuthor && (
+                        <Link
+                            href={`/edit/${postId}`}
+                            className="text-sm font-medium px-3 py-1.5 rounded-md text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors flex items-center gap-1.5"
+                        >
+                            <Edit className="w-4 h-4" />
+                            수정
+                        </Link>
+                    )}
                     <button
                         onClick={handleDeletePost}
                         disabled={isDeleting}
@@ -66,7 +98,15 @@ export default function PostActions({ postId, isAuthor }: PostActionsProps) {
                     </button>
                 </div>
             )}
-            <span className="text-sm font-medium mr-2 text-zinc-500 dark:text-zinc-400">공유하기</span>
+            <span className="text-sm font-medium mr-2 text-zinc-500 dark:text-zinc-400">공유/신고</span>
+            <button
+                onClick={handleReportPost}
+                disabled={isReporting}
+                className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
+                aria-label="게시글 신고"
+            >
+                {isReporting ? "..." : "신고"}
+            </button>
             <button
                 onClick={handleCopyLink}
                 className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white relative group"

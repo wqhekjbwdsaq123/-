@@ -24,11 +24,13 @@ interface CommentProps {
     currentUserId: string | undefined;
     postAuthorId: string | undefined;
     depth?: number;
+    isAdmin?: boolean;
 }
 
-export default function CommentItem({ comment, postId, currentUserId, postAuthorId, depth = 0 }: CommentProps) {
+export default function CommentItem({ comment, postId, currentUserId, postAuthorId, depth = 0, isAdmin = false }: CommentProps) {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isReplying, setIsReplying] = useState(false);
+    const [isReporting, setIsReporting] = useState(false);
 
     // Safety check - handle both single object and array formats from join
     const userEmail = comment.user
@@ -41,8 +43,8 @@ export default function CommentItem({ comment, postId, currentUserId, postAuthor
     const isCommentAuthorPostAuthor = comment.user_id === postAuthorId;
     const isCurrentUserPostAuthor = currentUserId === postAuthorId;
 
-    // Can delete if: user is comment author OR current user is post author
-    const canDelete = currentUserId === comment.user_id || isCurrentUserPostAuthor;
+    // Can delete if: user is comment author OR current user is post author OR isAdmin
+    const canDelete = currentUserId === comment.user_id || isCurrentUserPostAuthor || isAdmin;
 
     const initialLikesCount = comment.likes?.length || 0;
     const initialIsLiked = currentUserId ? comment.likes?.some(like => like.user_id === currentUserId) || false : false;
@@ -64,6 +66,34 @@ export default function CommentItem({ comment, postId, currentUserId, postAuthor
         } catch (error) {
             console.error('Failed to delete comment:', error);
             setIsDeleting(false);
+        }
+    };
+
+    const handleReport = async () => {
+        const reason = window.prompt("댓글 신고 사유를 입력해주세요:");
+        if (!reason) return;
+
+        setIsReporting(true);
+        try {
+            const response = await fetch(`/api/reports`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ comment_id: comment.id, reason }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || '신고에 실패했습니다.');
+            }
+
+            alert("신고가 접수되었습니다.");
+        } catch (error: any) {
+            console.error('Error reporting comment:', error);
+            alert(`신고 접수에 실패했습니다: ${error.message}`);
+        } finally {
+            setIsReporting(false);
         }
     };
 
@@ -90,16 +120,26 @@ export default function CommentItem({ comment, postId, currentUserId, postAuthor
                             </span>
                         </div>
 
-                        {canDelete && (
+                        <div className="flex items-center gap-2">
                             <button
-                                onClick={handleDelete}
-                                disabled={isDeleting}
-                                className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors shrink-0"
-                                title="댓글 삭제"
+                                onClick={handleReport}
+                                disabled={isReporting}
+                                className="text-[11px] font-medium text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-2 py-1 rounded-md transition-colors shrink-0 disabled:opacity-50"
+                                title="댓글 신고"
                             >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                {isReporting ? "처리 중" : "신고"}
                             </button>
-                        )}
+                            {canDelete && (
+                                <button
+                                    onClick={handleDelete}
+                                    disabled={isDeleting}
+                                    className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors shrink-0"
+                                    title="댓글 삭제"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     <p className="text-zinc-700 dark:text-zinc-300 text-sm whitespace-pre-wrap leading-relaxed mb-3">
@@ -153,6 +193,7 @@ export default function CommentItem({ comment, postId, currentUserId, postAuthor
                                     currentUserId={currentUserId}
                                     postAuthorId={postAuthorId}
                                     depth={depth + 1}
+                                    isAdmin={isAdmin}
                                 />
                             ))}
                         </div>

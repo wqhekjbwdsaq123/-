@@ -17,12 +17,21 @@ export async function DELETE(
             return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
         }
 
-        const { error } = await supabase
-            .from('posts')
-            .delete()
-            .eq('id', postId)
-            // Ensure the user deleting the post is the author (optional but recommended for security)
-            .eq('author_id', user.id);
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        const isAdmin = profile?.role === 'admin';
+
+        let query = supabase.from('posts').delete().eq('id', postId);
+
+        if (!isAdmin) {
+            query = query.eq('author_id', user.id);
+        }
+
+        const { error } = await query;
 
         if (error) {
             return NextResponse.json({ error: error.message }, { status: 500 });

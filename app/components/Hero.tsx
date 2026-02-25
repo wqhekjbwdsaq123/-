@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import SearchBar from './SearchBar';
+import { Edit3 } from 'lucide-react';
 
 interface HeroProps {
     user: any;
@@ -35,6 +36,18 @@ export default function Hero({ user }: HeroProps) {
                 </p>
 
                 <SearchBar />
+
+                {user && (
+                    <div className="mt-8 flex justify-center">
+                        <Link
+                            href="/write"
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium hover:scale-105 transition-transform shadow-lg shadow-zinc-900/20 dark:shadow-white/20"
+                        >
+                            <Edit3 className="w-4 h-4" />
+                            새 글 작성하기
+                        </Link>
+                    </div>
+                )}
             </div>
         </section>
     );
