@@ -11,10 +11,10 @@ export default function Header({ user }: { user: any }) {
                 </Link>
                 <nav className="flex items-center gap-3">
                     {user ? (
-                        <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="flex items-center gap-4 sm:gap-6">
                             <Link
                                 href="/mypage"
-                                className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                                className="text-sm font-medium px-4 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                             >
                                 마이페이지
                             </Link>

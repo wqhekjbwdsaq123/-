@@ -59,7 +59,7 @@ export default function PostCard({ post, isLoggedIn = false }: { post: Post, isL
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-3 break-words mb-0 flex-1 leading-relaxed">
                         {post.excerpt}
                     </p>
-                    <div className="mt-auto pt-0 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                    <div className="mt-auto pt-0 flex items-center justify-between">
                         <span className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
                             {formattedDate}
                         </span>
