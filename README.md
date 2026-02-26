@@ -1,4 +1,4 @@
-# 📝 Next.js 블로그
+# 📝 개인 블로그
 
 [![배포 사이트](https://img.shields.io/badge/🚀_라이브_데모-바로가기-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://my-blog-seven-gold.vercel.app/)
 
